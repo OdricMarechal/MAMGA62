@@ -1,8 +1,11 @@
 #include <SPI.h>
 #include <SD.h>
 
+
 int secondes = 0;
 int minutes = 0;
+int compteur = 0;
+
 
 File meteo;
 
@@ -16,42 +19,47 @@ void setup() {
   }
   Serial.println("L'initialisation de la carte SD s'est correctement déroulée!");
   SD.remove("meteo.txt");
+}
 
+
+void loop() {
+  compteur++;
   meteo = SD.open("meteo.txt", FILE_WRITE);
 
   if (meteo){
-    Serial.println("Écriture dans la carte...");
-    meteo.println("test");
-    Serial.println("Opération réussi avec succès!");
+    Serial.print("Compteur = ");
+    Serial.println(compteur);
+    meteo.print("Mettre la date"); // Date (Il y a un truc à acheter qui fait horloge)
+    meteo.print(";");
+    meteo.print("Mettre l'Humidité"); // Humidité
+    meteo.print(";");
+    meteo.println("Mettre la Température"); // Température
+    Serial.println();
 
-    meteo.close();
-  } else {
-    Serial.println("Erreur lors de l'ouverture de meteo.txt");
-  }
+     meteo.close();
+    } else {
+      Serial.println("Erreur lors de l'ouverture de meteo.txt");
+    }
 
-  meteo = SD.open("meteo.txt");
+   meteo = SD.open("meteo.txt");
 
-  if (meteo){
+   if (meteo){
     Serial.println("Lecture de la carte");
     while (meteo.available()){
       Serial.write(meteo.read());
-    }
+     }
     
     Serial.println("Opération réussi avec succès!");
 
     meteo.close();
-  } else {
+     } else {
     Serial.println("Erreur lors de l'ouverture de meteo.txt");
   }
 
-}
+    if (compteur == 30){
+      SD.remove("meteo.txt");
+      compteur = 0;
+     }
 
-void loop() {
-  delay(1000);
-  secondes++;
-
-  if (secondes == 60){
-    secondes = 0;
-    minutes++
-   }
+  delay(2000);
 }
